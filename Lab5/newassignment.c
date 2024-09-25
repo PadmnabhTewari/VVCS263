@@ -14,14 +14,16 @@ int right(int i) {
     return 2 * i + 2;
 }
 
+// Custom compare to sort numbers based on the last differing digit (ones place)
+int custom_compare(int a, int b) {
+    int last_digit_a = a % 10;
+    int last_digit_b = b % 10;
 
-int compare(int a, int b) {
-    int onea = a % 10;
-    int oneb = b % 10;
-
-    if (onea != oneb) {
-        return onea-oneb;
+    // If last digits are different, use them for comparison
+    if (last_digit_a != last_digit_b) {
+        return last_digit_a - last_digit_b;
     }
+    // If last digits are the same, compare the numbers directly
     return a - b;
 }
 
@@ -30,19 +32,19 @@ void min_heapify(int A[], int i, int n) {
     int r = right(i);
     int smallest = i;
 
-    if (l<n && compare(A[l],A[smallest])<0) {
-        smallest=l;
+    if (l < n && custom_compare(A[l], A[smallest]) < 0) {
+        smallest = l;
     }
 
-    if (r<n && compare(A[r],A[smallest])<0) {
-        smallest=r;
+    if (r < n && custom_compare(A[r], A[smallest]) < 0) {
+        smallest = r;
     }
 
-    if (smallest!=i) {
+    if (smallest != i) {
         int temp = A[i];
-        A[i]=A[smallest];
-        A[smallest]=temp;
-        min_heapify(A,smallest,n);
+        A[i] = A[smallest];
+        A[smallest] = temp;
+        min_heapify(A, smallest, n);
     }
 }
 
@@ -57,7 +59,7 @@ void insert(int A[], int *n, int key) {
     A[*n - 1] = key;
     int i = *n - 1;
 
-    while (i != 0 && compare(A[parent(i)], A[i]) > 0) {
+    while (i != 0 && custom_compare(A[parent(i)], A[i]) > 0) {
         int temp = A[i];
         A[i] = A[parent(i)];
         A[parent(i)] = temp;
@@ -65,17 +67,19 @@ void insert(int A[], int *n, int key) {
     }
 }
 
-int pop_min(int A[],int *n) {
-    if (*n<=0) return -1;
-    if (*n==1) {
+int pop_min(int A[], int *n) {
+    if (*n <= 0) return -1;
+    if (*n == 1) {
         (*n)--;
         return A[0];
     }
-    int r=A[0];
-    A[0]=A[*n-1];
+
+    int root = A[0];
+    A[0] = A[*n - 1];
     (*n)--;
-    min_heapify(A,0,*n);
-    return r;
+    min_heapify(A, 0, *n);
+
+    return root;
 }
 
 void heapsort(int A[], int n) {
@@ -87,48 +91,34 @@ void heapsort(int A[], int n) {
         min_heapify(A, 0, i);
     }
 }
+
 void print_heap(int A[], int n) {
-    for (int i = n-1 ; i>=0; i--) {
+    for (int i = 0; i < n; i++) {
         printf("%d ", A[i]);
     }
     printf("\n");
 }
+
 int main() {
-    int heap[100], n = 0,a=1;
-    int c,val,length;
-    while (a>0) {
-        printf("1. Insert into heap\n");
-        printf("2. Display heap in sorted order (heapsort)\n");
-        printf("3. Create an empty min heap\n");
+    int heap[100], n = 0;
+    int choice, val, length;
+
+    while (1) {
+        printf("1. Create an empty min heap\n");
+        printf("2. Build heap from input list\n");
+        printf("3. Insert into heap\n");
         printf("4. Pop from heap\n");
-        printf("5. Build heap from input list\n");
+        printf("5. Display heap in sorted order (heapsort)\n");
         printf("6. Generate random array and heapsort\n");
         printf("7. Quit\n");
         printf("Enter your choice: ");
-        scanf("%d", &c);
-        if (c == 1) {
-            printf("Enter value to insert: ");
-            scanf("%d", &val);
-            insert(heap, &n, val);
-            printf("After insertion: ");
-            print_heap(heap, n);
-        } 
-        else if (c == 2) {
-            heapsort(heap, n);
-            printf("Heap sorted: ");
-            print_heap(heap, n);
-        } 
-        else if (c == 3) {
+        scanf("%d", &choice);
+
+        if (choice == 1) {
             n = 0;
             printf("Empty min heap created.\n");
         } 
-        else if (c == 4) {
-            int popped = pop_min(heap, &n);
-            printf("Popped value: %d\n", popped);
-            printf("Heap after pop: ");
-            print_heap(heap, n);
-        } 
-        else if (c == 5) {
+        else if (choice == 2) {
             printf("Enter comma-separated values: ");
             char input[500];
             scanf("%s", input);
@@ -141,7 +131,25 @@ int main() {
             printf("Heap built: ");
             print_heap(heap, n);
         } 
-        else if (c == 6) {
+        else if (choice == 3) {
+            printf("Enter value to insert: ");
+            scanf("%d", &val);
+            insert(heap, &n, val);
+            printf("After insertion: ");
+            print_heap(heap, n);
+        } 
+        else if (choice == 4) {
+            int popped = pop_min(heap, &n);
+            printf("Popped value: %d\n", popped);
+            printf("Heap after pop: ");
+            print_heap(heap, n);
+        } 
+        else if (choice == 5) {
+            heapsort(heap, n);
+            printf("Heap sorted: ");
+            print_heap(heap, n);
+        } 
+        else if (choice == 6) {
             printf("Enter length of array to generate: ");
             scanf("%d", &length);
             int arr[100];
@@ -156,7 +164,7 @@ int main() {
             }
             printf("\n");
         } 
-        else if (c == 7) {
+        else if (choice == 7) {
             break;
         } 
         else {
