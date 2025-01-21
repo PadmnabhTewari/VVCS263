@@ -1,28 +1,69 @@
 #include<stdio.h>
-int main()
+void LUdec(int n,float A[n][n],float U[n][n],float L[n][n])
 {
-    int n;
-    scanf("%d",n);
-    int A[n][n];
-    int b[n];
     for(int i=0;i<n;i++){
-        for(int j=0;j<n;j++){
-            scanf("%d",A[i][j]);
-        }
-    }
-    for(int k=0;k<n;k++){
-            scanf("%d",b[k]);
-    }
-    for(int i=0;i<n;i++)
-    {
-        for(int j=i+1;j<n;j++){
-            int d=A[i][i]/A[i][j];
-            for(int k=0;k<n;k++)
+        for(int j=i;j<n;j++)
+        {
+            float sum=0;
+            for(int k=0;k<i;k++)
             {
-                A[i][k]-=A[i][j]*d;
-                b[k]=b[k]-b[j]*d;
+              sum=sum+(L[i][k]*U[k][j]);  
+            }
+            U[i][j]=A[i][j]-sum;
+        }   
+    
+        for(int j=i;j<n;j++){
+            if(i==j){
+                continue;
+            }
+            else{
+                float sum=0;
+                for(int k=0;k<i;k++){
+                    sum=sum+(L[j][k]*U[k][i]);
+                }
+                L[j][i]=(A[j][i]-sum)/U[i][i];
             }
         }
     }
-    
+}
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    float A[n][n],L[n][n],U[n][n];
+    int b[n];
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            scanf("%f",&A[i][j]);
+        }
+    }
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            if(i==j){
+                L[i][j]=1;
+            }
+            else{
+                L[i][j]=0;
+            }
+            U[i][j]=0;
+        }
+    }
+    for(int k=0;k<n;k++)
+    {
+            scanf("%d",&b[k]);
+    }
+    LUdec(n,A,U,L);
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            printf("%0.2f",U[i][j]);
+        }
+        printf("\n");
+    }
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            printf("%0.2f",L[i][j]);
+        }
+        printf("\n");
+    }
+    return 0;
 }
