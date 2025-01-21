@@ -59,11 +59,34 @@ int main()
         }
         printf("\n");
     }
+    printf("\n");
+    printf("\n");
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
             printf("%0.2f",L[i][j]);
         }
         printf("\n");
+    }
+    float z[n];
+    z[0]=b[0];
+    for(int i=1;i<n;i++){
+        float sum=0;
+        for(int j=i;j>=0;j--){
+            sum=sum+(A[i][j]*b[i-1]);
+        }
+        z[i]=b[i]-sum;
+    }
+    float x[n];
+    x[n-1]=z[n-1];
+    for(int i=0;i<n-1;i++){
+        float sum=0;
+        for(int j=i;j<n;j++){
+            sum=sum+(A[i][j]*z[i+1]);
+        }
+        x[i]=z[i]-sum;
+    }
+    for(int i=0;i<n;i++){
+        printf("%f",x[i]);
     }
     return 0;
 }
